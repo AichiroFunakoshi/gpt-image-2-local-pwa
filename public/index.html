@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>GPT Image 2 ローカル画像生成</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>GPT Image 2 ローカル画像生成</h1>
+        <p>参照画像とプロンプトから、キャラクターシート用画像を生成します。</p>
+      </div>
+      <div id="status" class="status">確認中...</div>
+    </header>
+
+    <section class="card">
+      <h2>1. APIキー設定</h2>
+      <p class="note">APIキーはこのプロジェクトの `.env` に手動で設定してください。ブラウザには入力・保存しません。</p>
+      <pre class="env-example">OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
+PORT=3000</pre>
+    </section>
+
+    <section class="card">
+      <h2>2. 参照画像</h2>
+      <p class="note">キャラクターシート、顔アップ、衣装参考などを最大6枚まで指定できます。複数回に分けた追加もできます。</p>
+      <label id="dropZone" class="drop-zone" for="images">
+        <span>画像をここにドラッグ＆ドロップ</span>
+        <strong>またはクリックして選択</strong>
+      </label>
+      <input id="images" class="file-input" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+      <div class="image-actions">
+        <span id="imageCount">0枚選択中</span>
+        <button id="clearImages" type="button">画像をクリア</button>
+      </div>
+      <div id="preview" class="preview"></div>
+    </section>
+
+    <section class="card">
+      <h2>3. 日本語指示</h2>
+      <p class="note">口語で「こうしてほしい」と書くと、画像生成用の英語プロンプトへ変換します。参照画像はこの段階では送信しません。</p>
+      <textarea id="intent" class="intent-textarea" spellcheck="false" placeholder="例: この人物をメイド服のキャラクターシートにして。表情差分、背面、靴、髪飾りが分かるようにして。画像内のラベルは日本語にして。"></textarea>
+      <div class="row">
+        <button id="buildPrompt">日本語指示から実行プロンプトを作成</button>
+        <select id="promptModel" aria-label="プロンプト作成モデル">
+          <option value="gpt-5.5" selected>gpt-5.5</option>
+          <option value="gpt-5.4-mini">gpt-5.4-mini</option>
+          <option value="gpt-5.4">gpt-5.4</option>
+          <option value="gpt-5.5-pro">gpt-5.5-pro</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. 実行プロンプト</h2>
+      <div class="row">
+        <button id="loadTemplate">キャラクターシート用テンプレートを入れる</button>
+        <button id="loadCurrentPrompt">現在のプロンプトを読み込む</button>
+        <select id="model" aria-label="モデル">
+          <option value="gpt-image-2" selected>gpt-image-2</option>
+          <option value="gpt-image-2-2026-04-21">gpt-image-2-2026-04-21</option>
+          <option value="chatgpt-image-latest">chatgpt-image-latest</option>
+          <option value="gpt-image-1.5">gpt-image-1.5</option>
+          <option value="gpt-image-1">gpt-image-1</option>
+          <option value="gpt-image-1-mini">gpt-image-1-mini</option>
+        </select>
+        <select id="size">
+          <option value="1024x1536" selected>スマホ縦長 1024×1536</option>
+          <option value="1536x1024">横長 1536×1024</option>
+          <option value="auto">auto</option>
+        </select>
+      </div>
+      <textarea id="prompt" spellcheck="false" placeholder="ここに英語プロンプトを入力します。画像内の文字は日本語で出すよう指定してください。"></textarea>
+    </section>
+
+    <section class="card">
+      <h2>5. 生成</h2>
+      <button id="generate" class="primary">画像を生成</button>
+      <div id="message" class="message"></div>
+      <div id="result" class="result"></div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

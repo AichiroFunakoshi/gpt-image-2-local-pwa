@@ -1,0 +1,15 @@
+{
+  "name": "GPT Image 2 ローカル画像生成",
+  "short_name": "Image2Local",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
