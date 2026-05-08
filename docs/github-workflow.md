@@ -58,7 +58,7 @@ After changes:
 ```zsh
 npm run check
 git status --short
-git add .
+git add -p
 git commit -m "Describe change"
 git push -u origin codex/my-change
 ```
