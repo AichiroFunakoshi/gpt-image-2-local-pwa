@@ -65,6 +65,14 @@ ENV_FILE="/path/to/gpt-image-2-local-pwa.env" npm start
 6. 修正またはmerge
 7. 他のMacで `git pull`
 
+詳しい手順は [docs/github-workflow.md](docs/github-workflow.md) を参照してください。
+
+変更前後の最小チェック:
+
+```zsh
+npm run check
+```
+
 ## ディレクトリ
 
 ```text
