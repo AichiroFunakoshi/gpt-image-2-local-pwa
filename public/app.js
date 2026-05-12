@@ -99,6 +99,146 @@ function showResult(data) {
   $("result").appendChild(pathNote);
 }
 
+function formatDateTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("ja-JP", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(value));
+}
+
+function createHistoryEmpty(text) {
+  const empty = document.createElement("div");
+  empty.className = "history-empty";
+  empty.textContent = text;
+  return empty;
+}
+
+function renderOutputHistory(files) {
+  const list = $("outputHistory");
+  list.innerHTML = "";
+
+  if (!files.length) {
+    list.appendChild(createHistoryEmpty("まだ生成画像はありません。"));
+    return;
+  }
+
+  files.slice(0, 6).forEach((file) => {
+    const item = document.createElement("div");
+    item.className = "history-item output-item";
+
+    const img = document.createElement("img");
+    img.src = file.url;
+    img.alt = file.filename;
+
+    const body = document.createElement("div");
+    body.className = "history-body";
+
+    const name = document.createElement("div");
+    name.className = "history-title";
+    name.textContent = file.filename;
+
+    const meta = document.createElement("div");
+    meta.className = "history-meta";
+    meta.textContent = formatDateTime(file.modifiedAt);
+
+    const actions = document.createElement("div");
+    actions.className = "history-actions";
+
+    const download = document.createElement("a");
+    download.href = file.downloadUrl;
+    download.download = file.filename;
+    download.textContent = "ダウンロード";
+
+    const open = document.createElement("a");
+    open.href = file.url;
+    open.target = "_blank";
+    open.rel = "noopener";
+    open.textContent = "開く";
+
+    actions.appendChild(download);
+    actions.appendChild(open);
+    body.appendChild(name);
+    body.appendChild(meta);
+    body.appendChild(actions);
+    item.appendChild(img);
+    item.appendChild(body);
+    list.appendChild(item);
+  });
+}
+
+function renderErrorHistory(logs) {
+  const list = $("errorHistory");
+  list.innerHTML = "";
+
+  if (!logs.length) {
+    list.appendChild(createHistoryEmpty("生成エラーは記録されていません。"));
+    return;
+  }
+
+  logs.slice(0, 6).forEach((log) => {
+    const item = document.createElement("div");
+    item.className = "history-item error-item";
+
+    const body = document.createElement("div");
+    body.className = "history-body";
+
+    const title = document.createElement("div");
+    title.className = "history-title";
+    title.textContent = log.code || log.type || "generation_error";
+
+    const message = document.createElement("div");
+    message.className = "history-message";
+    message.textContent = log.message;
+
+    const meta = document.createElement("div");
+    meta.className = "history-meta";
+    meta.textContent = [
+      formatDateTime(log.modifiedAt),
+      log.model,
+      log.size,
+      `${log.imageCount}枚`
+    ].filter(Boolean).join(" / ");
+
+    const filename = document.createElement("div");
+    filename.className = "history-file";
+    filename.textContent = log.filename;
+
+    body.appendChild(title);
+    body.appendChild(message);
+    body.appendChild(meta);
+    body.appendChild(filename);
+    item.appendChild(body);
+    list.appendChild(item);
+  });
+}
+
+async function refreshHistory() {
+  const [outputsRes, logsRes] = await Promise.all([
+    fetch("/api/outputs"),
+    fetch("/api/logs?limit=10")
+  ]);
+
+  const outputs = await outputsRes.json();
+  const logs = await logsRes.json();
+
+  if (!outputsRes.ok) {
+    throw new Error(outputs.error || "生成画像履歴の取得に失敗しました。");
+  }
+
+  if (!logsRes.ok) {
+    throw new Error(logs.error || "エラー履歴の取得に失敗しました。");
+  }
+
+  renderOutputHistory(outputs.files || []);
+  renderErrorHistory(logs.logs || []);
+}
+
 $("loadTemplate").addEventListener("click", () => {
   $("prompt").value = templatePrompt;
 });
@@ -354,10 +494,25 @@ $("generate").addEventListener("click", async () => {
     $("message").textContent = "生成完了。";
 
     showResult(data);
+    refreshHistory().catch(() => {});
+  } catch (err) {
+    $("message").textContent = `エラー: ${err.message}`;
+    refreshHistory().catch(() => {});
+  } finally {
+    $("generate").disabled = false;
+  }
+});
+
+$("refreshHistory").addEventListener("click", async () => {
+  $("refreshHistory").disabled = true;
+
+  try {
+    await refreshHistory();
+    $("message").textContent = "履歴を更新しました。";
   } catch (err) {
     $("message").textContent = `エラー: ${err.message}`;
   } finally {
-    $("generate").disabled = false;
+    $("refreshHistory").disabled = false;
   }
 });
 
@@ -370,3 +525,4 @@ refreshStatus().catch(() => {
 });
 
 renderPreview();
+refreshHistory().catch(() => {});

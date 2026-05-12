@@ -199,6 +199,41 @@ function logGenerationError({ err, params, uploadedFiles }) {
   };
 }
 
+function readGenerationLogs(limit = 10) {
+  return fs.readdirSync(logDir)
+    .filter(file => /^generation-error-.+\.json$/i.test(file))
+    .map((file) => {
+      const filePath = path.join(logDir, file);
+      const stat = fs.statSync(filePath);
+      let entry = null;
+
+      try {
+        entry = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      } catch {
+        entry = null;
+      }
+
+      const message = entry?.error?.message || "ログを読み込めませんでした。";
+      const code = entry?.error?.code || null;
+      const type = entry?.error?.type || null;
+
+      return {
+        filename: file,
+        createdAt: stat.birthtime.toISOString(),
+        modifiedAt: stat.mtime.toISOString(),
+        message,
+        code,
+        type,
+        model: entry?.request?.model || null,
+        size: entry?.request?.size || null,
+        imageCount: entry?.request?.image_count || 0,
+        promptPreview: entry?.request?.prompt_preview || ""
+      };
+    })
+    .sort((a, b) => b.modifiedAt.localeCompare(a.modifiedAt))
+    .slice(0, limit);
+}
+
 function toClientError(err) {
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
@@ -222,6 +257,14 @@ function toClientError(err) {
   }
 
   if (err?.status || err?.code) {
+    if (err?.code === "moderation_blocked" || err?.error?.code === "moderation_blocked") {
+      return {
+        status: Number(err.status || 400),
+        message: "OpenAIの安全判定で画像生成がブロックされました。参照画像またはプロンプトの組み合わせが原因です。プロンプトをより中立的な表現に調整してください。",
+        details: err.error || err.response?.data || null
+      };
+    }
+
     return {
       status: Number(err.status || 500),
       message: err.message || "OpenAI APIでエラーが発生しました。",
@@ -312,6 +355,18 @@ app.get("/api/outputs", (_req, res) => {
   res.json({
     ok: true,
     files
+  });
+});
+
+app.get("/api/logs", (req, res) => {
+  const requestedLimit = Number(req.query?.limit || 10);
+  const limit = Number.isFinite(requestedLimit)
+    ? Math.max(1, Math.min(50, requestedLimit))
+    : 10;
+
+  res.json({
+    ok: true,
+    logs: readGenerationLogs(limit)
   });
 });
 

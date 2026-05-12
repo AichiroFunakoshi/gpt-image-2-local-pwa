@@ -33,6 +33,11 @@ h2 {
   margin: 0 0 12px;
 }
 
+h3 {
+  font-size: 15px;
+  margin: 0 0 10px;
+}
+
 p {
   margin: 0;
 }
@@ -259,6 +264,103 @@ textarea {
   overflow-wrap: anywhere;
 }
 
+.section-heading {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-heading h2 {
+  margin: 0;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.history-empty,
+.history-item {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+  padding: 10px;
+}
+
+.history-empty {
+  color: #666;
+  font-size: 13px;
+}
+
+.history-item {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.output-item img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #eee;
+  flex: 0 0 auto;
+}
+
+.history-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.history-title,
+.history-file {
+  overflow-wrap: anywhere;
+}
+
+.history-title {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.history-message {
+  margin-top: 5px;
+  color: #333;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.history-meta,
+.history-file {
+  margin-top: 5px;
+  color: #666;
+  font-size: 12px;
+}
+
+.history-file {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.history-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 7px;
+}
+
+.history-actions a {
+  color: #111;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 @media (max-width: 720px) {
   header {
     flex-direction: column;
@@ -275,5 +377,14 @@ textarea {
   .image-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .history-grid {
+    grid-template-columns: 1fr;
   }
 }
