@@ -64,6 +64,10 @@ p {
   align-items: center;
 }
 
+.compact-row {
+  justify-content: flex-end;
+}
+
 input[type="password"],
 select {
   height: 42px;
@@ -128,6 +132,33 @@ textarea {
 .intent-textarea {
   min-height: 160px;
   margin-bottom: 12px;
+}
+
+.prompt-review {
+  margin-top: 14px;
+  border-top: 1px solid #e1e1e1;
+  padding-top: 14px;
+}
+
+.prompt-review-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.prompt-review label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.readonly-textarea {
+  min-height: 210px;
+  margin-top: 0;
+  background: #fafafa;
 }
 
 .file-input {
@@ -385,6 +416,10 @@ textarea {
   }
 
   .history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prompt-review-grid {
     grid-template-columns: 1fr;
   }
 }

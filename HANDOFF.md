@@ -19,10 +19,12 @@ Macローカルで動かす GPT Image 画像生成PWAです。
 - 画像は複数回に分けて追加できる。フロント側は `selectedImageFiles` で選択状態を保持する
 - 英語プロンプトを入力、または `prompts/current_prompt.txt` から読み込む
 - 日本語の口語指示を入力し、OpenAIテキストモデルで英語の実行プロンプトに変換する
+- プロンプト作成時は、作成前の実行プロンプトと作成後の英語プロンプトを画面上で比較できる
 - 画像内ラベルや注釈は日本語で出力させる
 - OpenAI API の画像編集APIを使って生成する
 - 生成結果をブラウザに表示する
 - 生成PNGを `data/outputs/` に保存する
+- 生成履歴と生成エラーログを画面から確認する
 - APIキーはブラウザには渡さず、サーバー側で `ENV_FILE`、外部 `.secrets`、またはローカル `.env` から読む
 
 ## 重要な制約
@@ -42,6 +44,9 @@ Macローカルで動かす GPT Image 画像生成PWAです。
   - `ENV_FILE` があればそれを読み、なければ `../.secrets/gpt-image-2-local-pwa.env`、最後にローカル `.env` を読む
   - `GET /api/status`
   - `GET /api/prompt/current`
+  - `GET /api/download/:filename`
+  - `GET /api/outputs`
+  - `GET /api/logs`
   - `POST /api/prompt/build`
   - `POST /api/generate`
   - `POST /api/prompt/build` は `prompts/prompt_builder_system.txt` を読み、Responses APIで日本語指示を英語の実行プロンプトへ変換し、`prompts/current_prompt.txt` に保存する
@@ -50,19 +55,25 @@ Macローカルで動かす GPT Image 画像生成PWAです。
   - multer / OpenAI / バリデーションエラーはJSONで返す
   - 一時アップロードは `data/uploads/`
   - 生成結果は `data/outputs/`
+  - 生成失敗時の診断ログは `data/logs/`
+  - `/api/logs` はUI用の要約だけを返し、プロンプト本文プレビューは返さない
 
 - `public/index.html`
   - APIキーは `.env` 手動設定案内のみ
   - 参照画像はクリック選択 + ドラッグ＆ドロップ対応
   - 日本語指示欄とプロンプト作成ボタンあり
+  - プロンプト確認欄あり。作成前/作成後を比較し、コピー・反映・作成前に戻す操作ができる
   - モデル選択あり
   - サイズ選択あり
   - 「現在のプロンプトを読み込む」ボタンあり
+  - 生成履歴と生成エラー履歴あり
 
 - `public/app.js`
   - `/api/status` でAPIキー設定有無だけ表示
   - `/api/prompt/build` で日本語指示から英語の実行プロンプトを作成
+  - プロンプト作成後、作成前と作成後を `promptReview` に保持して比較表示する
   - `/api/prompt/current` からプロンプト読み込み
+  - `/api/outputs` と `/api/logs` から履歴を表示する
   - 参照画像のクリック選択、ドラッグ＆ドロップ、プレビュー
   - 生成時に `FormData` で `images`, `prompt`, `model`, `size`, `outputFormat` を送信
 

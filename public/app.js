@@ -253,6 +253,36 @@ async function readJsonResponse(res, label) {
   return data;
 }
 
+let promptReviewState = {
+  previousPrompt: "",
+  builtPrompt: ""
+};
+
+function showPromptReview({ previousPrompt, builtPrompt }) {
+  promptReviewState = {
+    previousPrompt,
+    builtPrompt
+  };
+  $("previousPrompt").value = previousPrompt || "";
+  $("builtPrompt").value = builtPrompt || "";
+  $("promptReview").hidden = false;
+}
+
+function applyBuiltPromptToEditor() {
+  if (!promptReviewState.builtPrompt) {
+    $("message").textContent = "反映できる英語プロンプトがありません。";
+    return;
+  }
+
+  $("prompt").value = promptReviewState.builtPrompt;
+  $("message").textContent = "作成後の英語プロンプトを実行プロンプトへ反映しました。";
+}
+
+function restorePreviousPrompt() {
+  $("prompt").value = promptReviewState.previousPrompt || "";
+  $("message").textContent = "作成前の実行プロンプトに戻しました。";
+}
+
 $("loadTemplate").addEventListener("click", () => {
   $("prompt").value = templatePrompt;
 });
@@ -296,6 +326,7 @@ $("buildPrompt").addEventListener("click", async () => {
 
   $("buildPrompt").disabled = true;
   $("message").textContent = "実行プロンプトを作成中です...";
+  const previousPrompt = $("prompt").value;
 
   try {
     const res = await fetch("/api/prompt/build", {
@@ -320,12 +351,37 @@ $("buildPrompt").addEventListener("click", async () => {
       throw new Error(`${data.error || "プロンプト作成に失敗しました。"}${details}`);
     }
 
-    $("prompt").value = data.prompt || "";
+    const builtPrompt = data.prompt || "";
+    showPromptReview({
+      previousPrompt,
+      builtPrompt
+    });
+    $("prompt").value = builtPrompt;
     $("message").textContent = "実行プロンプトを作成し、current_prompt.txt に保存しました。";
   } catch (err) {
     $("message").textContent = `エラー: ${err.message}`;
   } finally {
     $("buildPrompt").disabled = false;
+  }
+});
+
+$("applyBuiltPrompt").addEventListener("click", applyBuiltPromptToEditor);
+
+$("restorePreviousPrompt").addEventListener("click", restorePreviousPrompt);
+
+$("copyBuiltPrompt").addEventListener("click", async () => {
+  if (!promptReviewState.builtPrompt) {
+    $("message").textContent = "コピーできる英語プロンプトがありません。";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(promptReviewState.builtPrompt);
+    $("message").textContent = "英語プロンプトをコピーしました。";
+  } catch {
+    $("builtPrompt").focus();
+    $("builtPrompt").select();
+    $("message").textContent = "コピーに失敗しました。英語プロンプト欄を選択しました。";
   }
 });
 
