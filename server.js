@@ -204,32 +204,30 @@ function readGenerationLogs(limit = 10) {
     .filter(file => /^generation-error-.+\.json$/i.test(file))
     .map((file) => {
       const filePath = path.join(logDir, file);
-      const stat = fs.statSync(filePath);
-      let entry = null;
 
       try {
-        entry = JSON.parse(fs.readFileSync(filePath, "utf8"));
+        const stat = fs.statSync(filePath);
+        const entry = JSON.parse(fs.readFileSync(filePath, "utf8"));
+        const message = entry?.error?.message || "ログを読み込めませんでした。";
+        const code = entry?.error?.code || null;
+        const type = entry?.error?.type || null;
+
+        return {
+          filename: file,
+          createdAt: stat.birthtime.toISOString(),
+          modifiedAt: stat.mtime.toISOString(),
+          message,
+          code,
+          type,
+          model: entry?.request?.model || null,
+          size: entry?.request?.size || null,
+          imageCount: entry?.request?.image_count || 0
+        };
       } catch {
-        entry = null;
+        return null;
       }
-
-      const message = entry?.error?.message || "ログを読み込めませんでした。";
-      const code = entry?.error?.code || null;
-      const type = entry?.error?.type || null;
-
-      return {
-        filename: file,
-        createdAt: stat.birthtime.toISOString(),
-        modifiedAt: stat.mtime.toISOString(),
-        message,
-        code,
-        type,
-        model: entry?.request?.model || null,
-        size: entry?.request?.size || null,
-        imageCount: entry?.request?.image_count || 0,
-        promptPreview: entry?.request?.prompt_preview || ""
-      };
     })
+    .filter(Boolean)
     .sort((a, b) => b.modifiedAt.localeCompare(a.modifiedAt))
     .slice(0, limit);
 }
@@ -359,10 +357,9 @@ app.get("/api/outputs", (_req, res) => {
 });
 
 app.get("/api/logs", (req, res) => {
-  const requestedLimit = Number(req.query?.limit || 10);
-  const limit = Number.isFinite(requestedLimit)
-    ? Math.max(1, Math.min(50, requestedLimit))
-    : 10;
+  const rawLimit = String(req.query?.limit ?? "10");
+  const parsedLimit = /^\d+$/.test(rawLimit) ? Number.parseInt(rawLimit, 10) : 10;
+  const limit = Math.max(1, Math.min(50, parsedLimit));
 
   res.json({
     ok: true,

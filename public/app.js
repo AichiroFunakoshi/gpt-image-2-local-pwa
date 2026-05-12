@@ -104,12 +104,17 @@ function formatDateTime(value) {
     return "";
   }
 
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
   return new Intl.DateTimeFormat("ja-JP", {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit"
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function createHistoryEmpty(text) {
@@ -224,19 +229,28 @@ async function refreshHistory() {
     fetch("/api/logs?limit=10")
   ]);
 
-  const outputs = await outputsRes.json();
-  const logs = await logsRes.json();
-
-  if (!outputsRes.ok) {
-    throw new Error(outputs.error || "生成画像履歴の取得に失敗しました。");
-  }
-
-  if (!logsRes.ok) {
-    throw new Error(logs.error || "エラー履歴の取得に失敗しました。");
-  }
+  const outputs = await readJsonResponse(outputsRes, "生成画像履歴");
+  const logs = await readJsonResponse(logsRes, "エラー履歴");
 
   renderOutputHistory(outputs.files || []);
   renderErrorHistory(logs.logs || []);
+}
+
+async function readJsonResponse(res, label) {
+  const contentType = res.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/json")) {
+    const text = await res.text();
+    throw new Error(`${label}の取得に失敗しました。HTTP ${res.status}: ${text.slice(0, 200)}`);
+  }
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || `${label}の取得に失敗しました。HTTP ${res.status}`);
+  }
+
+  return data;
 }
 
 $("loadTemplate").addEventListener("click", () => {
