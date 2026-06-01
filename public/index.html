@@ -52,6 +52,26 @@ PORT=3000</pre>
           <option value="gpt-5.5-pro">gpt-5.5-pro</option>
         </select>
       </div>
+      <div id="promptReview" class="prompt-review" hidden>
+        <div class="section-heading">
+          <h3>プロンプト確認</h3>
+          <div class="row compact-row">
+            <button id="applyBuiltPrompt" type="button">実行プロンプトへ反映</button>
+            <button id="copyBuiltPrompt" type="button">英語プロンプトをコピー</button>
+            <button id="restorePreviousPrompt" type="button">作成前に戻す</button>
+          </div>
+        </div>
+        <div class="prompt-review-grid">
+          <label>
+            <span>作成前の実行プロンプト</span>
+            <textarea id="previousPrompt" class="readonly-textarea" spellcheck="false" readonly></textarea>
+          </label>
+          <label>
+            <span>作成後の英語プロンプト</span>
+            <textarea id="builtPrompt" class="readonly-textarea" spellcheck="false" readonly></textarea>
+          </label>
+        </div>
+      </div>
     </section>
 
     <section class="card">

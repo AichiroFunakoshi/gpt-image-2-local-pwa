@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "check": "node --check server.js && node --check public/app.js"
+    "check": "node --check server.js && node --check public/app.js",
+    "pr:summary": "node scripts/check-pr-summary.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",
