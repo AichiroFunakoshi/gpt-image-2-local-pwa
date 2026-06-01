@@ -4,6 +4,7 @@ import https from "node:https";
 const owner = "AichiroFunakoshi";
 const repo = "gpt-image-2-local-pwa";
 const prNumber = process.argv[2];
+const requestTimeoutMs = 10000;
 
 if (!/^\d+$/.test(prNumber || "")) {
   console.error("Usage: node scripts/check-pr-summary.mjs <pr-number>");
@@ -26,14 +27,29 @@ function getJson(path) {
       });
       res.on("end", () => {
         try {
-          resolve(JSON.parse(raw));
+          const data = raw ? JSON.parse(raw) : null;
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            reject(new Error(`GitHub API ${res.statusCode}: ${data?.message || "request failed"}`));
+            return;
+          }
+          resolve(data);
         } catch (err) {
           reject(err);
         }
       });
     });
+    req.setTimeout(requestTimeoutMs, () => {
+      req.destroy(new Error(`GitHub API request timed out after ${requestTimeoutMs}ms`));
+    });
     req.on("error", reject);
   });
+}
+
+function requireArray(value, label) {
+  if (!Array.isArray(value)) {
+    throw new Error(`Expected GitHub API ${label} response to be an array.`);
+  }
+  return value;
 }
 
 function compactBody(body) {
@@ -52,7 +68,7 @@ const [pr, comments, reviews] = await Promise.all([
   getJson(`${base}/reviews`)
 ]);
 
-const codeRabbitComments = comments
+const codeRabbitComments = requireArray(comments, "comments")
   .filter(comment => comment?.user?.login === "coderabbitai[bot]")
   .map(comment => ({
     path: comment.path,
@@ -60,7 +76,7 @@ const codeRabbitComments = comments
     summary: compactBody(comment.body)
   }));
 
-const codeRabbitReviews = reviews
+const codeRabbitReviews = requireArray(reviews, "reviews")
   .filter(review => review?.user?.login === "coderabbitai[bot]")
   .map(review => ({
     state: review.state,
