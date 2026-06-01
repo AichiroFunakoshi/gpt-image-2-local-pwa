@@ -2,14 +2,20 @@
 
 ## 正しい作業ディレクトリ
 
-このプロジェクトの実体は iCloud Drive 側にあります。Desktop 側の `AI-Workspace` はエイリアスとして見える場合があり、Codex/シェルから参照すると静的ファイル配信や作業ディレクトリ解決が壊れることがあります。
+このプロジェクトの実作業は、各Macの純ローカルcloneで行います。GitHubの `main` を正として同期し、iCloud Drive 側の旧フォルダは申し送り/アーカイブ参照として扱います。
 
 ```zsh
-cd "/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa"
+cd "/Users/inaminetetsuo/Projects/gpt-image-2-local-pwa"
 npm start
 ```
 
 以後の作業は必ず上記ディレクトリを基準にしてください。
+
+iCloud Drive 側の申し送り:
+
+```text
+/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa/LOCAL_WORKFLOW_HANDOFF.md
+```
 
 ## 現在の目的
 
@@ -131,7 +137,7 @@ Macローカルで動かす GPT Image 画像生成PWAです。
 ## 起動確認手順
 
 ```zsh
-cd "/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa"
+cd "/Users/inaminetetsuo/Projects/gpt-image-2-local-pwa"
 npm start
 ```
 
@@ -168,10 +174,10 @@ PWAのservice workerキャッシュが残っている可能性があります。
 
 ```text
 以下の申し送りを読んで、このプロジェクトの作業を続けてください。
-/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa/HANDOFF.md
+/Users/inaminetetsuo/Projects/gpt-image-2-local-pwa/HANDOFF.md
 
 作業ディレクトリは以下です。
-/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa
+/Users/inaminetetsuo/Projects/gpt-image-2-local-pwa
 
 APIキーは表示しないでください。
 実画像生成APIは、私が明示的に許可するまで呼ばないでください。

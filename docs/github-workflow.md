@@ -5,8 +5,9 @@ This project is intended to be shared across Macs through GitHub while keeping s
 ## First-time setup on another Mac
 
 ```zsh
-git clone https://github.com/AichiroFunakoshi/gpt-image-2-local-pwa.git
-cd gpt-image-2-local-pwa
+mkdir -p ~/Projects
+git clone https://github.com/AichiroFunakoshi/gpt-image-2-local-pwa.git ~/Projects/gpt-image-2-local-pwa
+cd ~/Projects/gpt-image-2-local-pwa
 npm install
 cp .env.example .env
 ```
@@ -48,6 +49,7 @@ ENV_FILE="/path/to/gpt-image-2-local-pwa.env" npm start
 ## Normal change flow
 
 ```zsh
+cd ~/Projects/gpt-image-2-local-pwa
 git checkout main
 git pull
 git checkout -b codex/my-change
@@ -70,6 +72,7 @@ Then open a pull request on GitHub. CodeRabbit can review the PR there.
 On each Mac:
 
 ```zsh
+cd ~/Projects/gpt-image-2-local-pwa
 git checkout main
 git pull
 npm install
