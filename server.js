@@ -12,12 +12,25 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const defaultExternalEnvPath = path.resolve(__dirname, "..", ".secrets", "gpt-image-2-local-pwa.env");
 
+function assertSafeWorkspace() {
+  const normalizedDir = path.normalize(__dirname);
+  const isICloudArchive = normalizedDir.includes(`${path.sep}Mobile Documents${path.sep}`)
+    && normalizedDir.includes("gpt-image-2-local-pwa-archive");
+
+  if (isICloudArchive && process.env.ALLOW_ICLOUD_ARCHIVE_RUN !== "1") {
+    console.error("Refusing to run from the iCloud archive copy.");
+    console.error("Use /Users/inaminetetsuo/Projects/gpt-image-2-local-pwa as the active workspace.");
+    process.exit(1);
+  }
+}
+
 function loadEnv() {
   const envPath = process.env.ENV_FILE || (fs.existsSync(defaultExternalEnvPath) ? defaultExternalEnvPath : path.join(__dirname, ".env"));
   dotenv.config({ path: envPath, override: true, quiet: true });
   return envPath;
 }
 
+assertSafeWorkspace();
 loadEnv();
 
 const PORT = Number(process.env.PORT || 3000);
