@@ -1,8 +1,10 @@
 # gpt-image-2-local-pwa 作業申し送り
 
-## 正しい作業ディレクトリ
+## 正しい作業方針
 
 このプロジェクトの実作業は、各Macの純ローカルcloneで行います。GitHubの `main` を正として同期し、iCloud Drive 側の旧フォルダは申し送り/アーカイブ参照として扱います。
+
+推奨作業ディレクトリ:
 
 ```zsh
 cd "/Users/inaminetetsuo/Projects/gpt-image-2-local-pwa"
@@ -10,6 +12,14 @@ npm start
 ```
 
 以後の作業は必ず上記ディレクトリを基準にしてください。
+
+この方針を優先する理由:
+
+- 両方のMacで `git pull --ff-only` により同じ状態へ揃えられる
+- iCloud Drive の同期遅延、`.git` ロック、古いファイル同期による事故を避けられる
+- GitHub上の履歴を正本にするため、古いローカルデータで新しいデータを上書きしにくい
+
+iCloud Drive 側で長時間のdev server起動、npm install、通常のgit作業は原則避けてください。必要がある場合でも、GitHub `main` とローカルcloneの状態を確認してから行ってください。
 
 iCloud Drive 側の申し送り:
 
