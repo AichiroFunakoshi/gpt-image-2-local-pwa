@@ -20,12 +20,23 @@ The unified policy is:
 
 - GitHub `main` is the source of truth for code.
 - Each Mac works from its own local clone at `/Users/inaminetetsuo/Projects/gpt-image-2-local-pwa`.
-- The iCloud Drive copy is a handoff/archive reference, not the normal coding workspace.
+- The former iCloud Drive copy has been renamed to `gpt-image-2-local-pwa-archive` and is not the normal coding workspace.
 - Before starting work on any Mac, run `git checkout main` and `git pull --ff-only`.
 - Use feature branches and pull requests for changes.
 - Do not use iCloud sync as a code synchronization mechanism.
+- Do not edit code, run dev servers, run npm install, or perform normal git work inside the iCloud archive folder.
 - Do not overwrite local generated data, private reference images, `.env`, or `.secrets` from another Mac.
 - If local and remote histories diverge, stop and inspect. Do not force-push, reset, or overwrite without explicit approval.
+
+## Archived iCloud folder
+
+The old iCloud Drive workspace was renamed to prevent accidental use:
+
+```text
+/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa-archive
+```
+
+Use it only as an archive/reference if absolutely necessary. Do not treat it as a source of truth.
 
 ## Where to work on each Mac
 

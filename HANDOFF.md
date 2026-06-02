@@ -2,7 +2,7 @@
 
 ## 正しい作業方針
 
-このプロジェクトの実作業は、各Macの純ローカルcloneで行います。GitHubの `main` を正として同期し、iCloud Drive 側の旧フォルダは申し送り/アーカイブ参照として扱います。
+このプロジェクトの実作業は、各Macの純ローカルcloneで行います。GitHubの `main` を正として同期し、iCloud Drive 側の旧フォルダはアーカイブ参照として扱います。
 
 推奨作業ディレクトリ:
 
@@ -19,12 +19,12 @@ npm start
 - iCloud Drive の同期遅延、`.git` ロック、古いファイル同期による事故を避けられる
 - GitHub上の履歴を正本にするため、古いローカルデータで新しいデータを上書きしにくい
 
-iCloud Drive 側で長時間のdev server起動、npm install、通常のgit作業は原則避けてください。必要がある場合でも、GitHub `main` とローカルcloneの状態を確認してから行ってください。
+iCloud Drive 側で長時間のdev server起動、npm install、通常のgit作業、コード編集は行わないでください。必要がある場合でも、GitHub `main` とローカルcloneの状態を確認してから、アーカイブ参照として読むだけにしてください。
 
-iCloud Drive 側の申し送り:
+iCloud Drive 側の旧フォルダは誤作業防止のためアーカイブ名へ変更済みです:
 
 ```text
-/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa/LOCAL_WORKFLOW_HANDOFF.md
+/Users/inaminetetsuo/Library/Mobile Documents/com~apple~CloudDocs/AI-Workspace/gpt-image-2-local-pwa-archive
 ```
 
 ## 現在の目的
