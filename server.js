@@ -26,7 +26,7 @@ function assertSafeWorkspace() {
 
 function loadEnv() {
   const envPath = process.env.ENV_FILE || (fs.existsSync(defaultExternalEnvPath) ? defaultExternalEnvPath : path.join(__dirname, ".env"));
-  dotenv.config({ path: envPath, override: true, quiet: true });
+  dotenv.config({ path: envPath, quiet: true });
   return envPath;
 }
 
